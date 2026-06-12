@@ -1,0 +1,645 @@
+{
+  "name": "PEGELONLINE Pegelstände nach CKAN aktualisieren - Template",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 01 Zeitplan: alle 10 Minuten\n\nStartet den Workflow automatisch alle 10 Minuten.",
+        "height": 170,
+        "width": 220,
+        "color": "#EC7E7E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        720
+      ],
+      "name": "Info – 01 Zeitplan: alle 10 Minuten"
+    },
+    {
+      "parameters": {
+        "content": "## 02 Konfiguration \nZentrale Stelle für alle Nutzer-Eingaben: CKAN-Link, Resource-ID, Zeitzone, Fallbacks und Messstellen. Prüft außerdem Pflichtfelder und UUIDs.",
+        "height": 202,
+        "width": 220,
+        "color": "#F7AE69"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        688
+      ],
+      "name": "Info – 02 Konfiguration bearbeiten"
+    },
+    {
+      "parameters": {
+        "content": "## 03 CKAN: letzten Messzeitpunkt suchen\n\nSucht pro Messstelle den neuesten gespeicherten CKAN-Zeitstempel. Dadurch lädt der Workflow später nur fehlende neue Werte nach.",
+        "height": 218,
+        "width": 220,
+        "color": "#F9EA8B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        560,
+        672
+      ],
+      "name": "Info – 03 CKAN: letzten Messzeitpunkt suchen"
+    },
+    {
+      "parameters": {
+        "content": "## 04 PEGELONLINE: Zeitraum vorbereiten\n\nBerechnet Start- und Endzeitpunkt für die PEGELONLINE-Abfrage. Nutzt den letzten CKAN-Zeitstempel oder einen Fallback-Zeitraum.",
+        "height": 266,
+        "width": 220,
+        "color": "#7EDD81"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        784,
+        624
+      ],
+      "name": "Info – 04 PEGELONLINE: Zeitraum vorbereiten"
+    },
+    {
+      "parameters": {
+        "content": "## 05 Nur Stationen mit gültigem Zeitraum\n\nLässt nur Messstellen weiter, bei denen ein gültiger Abfragezeitraum erstellt werden konnte. Fehlerhafte Stationen werden übersprungen.",
+        "height": 234,
+        "width": 220,
+        "color": "#53C7E4"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        656
+      ],
+      "name": "Info – 05 Nur Stationen mit gültigem Zeitraum"
+    },
+    {
+      "parameters": {
+        "content": "## 06 PEGELONLINE: Messwerte abrufen\n\nRuft die Wasserstands-Messwerte der jeweiligen Messstelle über die PEGELONLINE-API ab.",
+        "height": 234,
+        "width": 220,
+        "color": "#CF5DEE"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        656
+      ],
+      "name": "Info – 06 PEGELONLINE: Messwerte abrufen"
+    },
+    {
+      "parameters": {
+        "content": "## 07 Messwerte für CKAN normalisieren\n\nWandelt PEGELONLINE-Antworten in CKAN-kompatible Messwert-Items um und rechnet cm in Meter um.",
+        "height": 218,
+        "width": 220,
+        "color": "#EC7E7E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        672
+      ],
+      "name": "Info – 07 Messwerte für CKAN normalisieren"
+    },
+    {
+      "parameters": {
+        "content": "## 08 Nur gültige Messwerte\n\nFiltert nur verwertbare Messwerte weiter. API-Fehler, leere Antworten oder ungültige Werte werden nicht geschrieben.",
+        "height": 186,
+        "width": 220,
+        "color": "#F7AE69"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        704
+      ],
+      "name": "Info – 08 Nur gültige Messwerte"
+    },
+    {
+      "parameters": {
+        "content": "## 10 CKAN: Schreib-Payloads bauen\n\nEntscheidet, ob ein Messwert neu eingefügt, aktualisiert oder als unverändert gezählt wird. ",
+        "height": 202,
+        "width": 220,
+        "color": "#7EDD81"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        688
+      ],
+      "name": "Info – 10 CKAN: Schreib-Payloads bauen"
+    },
+    {
+      "parameters": {
+        "content": "## 11 Nur echte Schreib-Payloads\n\nVerhindert leere CKAN-Schreibversuche, wenn es keine neuen oder geänderten Messwerte gibt.",
+        "height": 202,
+        "width": 220,
+        "color": "#53C7E4"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        688
+      ],
+      "name": "Info – 11 Nur echte Schreib-Payloads"
+    },
+    {
+      "parameters": {
+        "content": "## 13 Ergebnis zusammenfassen\n\nErstellt am Ende eine kompakte Übersicht: geprüfte Werte, Inserts, Updates, unveränderte Werte und Fehler.",
+        "height": 170,
+        "width": 236,
+        "color": "#EC7E7E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        720
+      ],
+      "name": "Info – 13 Ergebnis zusammenfassen"
+    },
+    {
+      "parameters": {
+        "content": "## CKAN\n\nSchreibt neue oder geänderte Messwerte in die dynamische CKAN-Tabelle.",
+        "height": 138,
+        "width": 220,
+        "color": "#CF5DEE"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        672
+      ],
+      "name": "Info – CKAN"
+    },
+    {
+      "parameters": {
+        "content": "## 09 CKAN: vorhandene Messwerte prüfen\n\nPrüft für jeden Messwert, ob die Kombination aus messstelle_id und zeitstempel bereits in CKAN existiert.",
+        "height": 250,
+        "width": 220,
+        "color": "#F9EA8B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        640
+      ],
+      "name": "Info – 09 CKAN: vorhandene Messwerte prüfen"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "name": "01 Zeitplan: alle 10 Minuten",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Startet den Workflow automatisch alle 10 Minuten."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CKAN_BASE_URL.replace(/\\/$/, \"\") + \"/api/3/action/datastore_search\" }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    resource_id: $json.pegelwerteResourceId,\n    filters: {\n      messstelle_id: Number($json.pegel_id)\n    },\n    sort: \"zeitstempel desc\",\n    limit: 1\n  }\n}}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "name": "03 CKAN: letzten Messzeitpunkt suchen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        592,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Sucht pro Messstelle den neuesten gespeicherten CKAN-Zeitstempel. Dadurch lädt der Workflow später nur fehlende neue Werte nach."
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * Ermittelt pro Messstelle den Zeitraum, der bei PEGELONLINE abgefragt     * werden soll.\n * Grundlage ist der zuletzt gespeicherte Messzeitpunkt in der dynamischen  * CKAN-Tabelle.\n */\n\nconst checkItems = $input.all();\nconst stationItems = $items('02 Konfiguration');\nconst out = [];\n\n// Parst JSON-Strings, falls ein vorheriger Node body/data als Text statt als Objekt liefert.\nfunction parseMaybeJson(value) {\n  if (typeof value !== 'string') return value;\n  const trimmed = value.trim();\n  if (!trimmed) return value;\n  try {\n    return JSON.parse(trimmed);\n  } catch (error) {\n    return value;\n  }\n}\n\n// Prüft, ob ein Zeitstempel bereits eine Zeitzone enthält.\nfunction hasExplicitTimezone(value) {\n  return /(?:Z|[+-]\\d{2}:\\d{2})$/.test(String(value));\n}\n\n// Berechnet den Zeitzonen-Offset für einen bestimmten Zeitpunkt.\nfunction getOffsetMinutes(date, timeZone) {\n  const parts = new Intl.DateTimeFormat('en-CA', {\n    timeZone,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false,\n    hourCycle: 'h23',\n  }).formatToParts(date);\n\n  const obj = {};\n  for (const p of parts) {\n    if (p.type !== 'literal') obj[p.type] = p.value;\n  }\n\n  const asUtc = Date.UTC(\n    Number(obj.year),\n    Number(obj.month) - 1,\n    Number(obj.day),\n    Number(obj.hour),\n    Number(obj.minute),\n    Number(obj.second)\n  );\n\n  return (asUtc - date.getTime()) / 60000;\n}\n\n// Wandelt CKAN-Zeitstempel ohne Zeitzone als lokale Zeit in UTC um.\nfunction localTimestampToUtcDate(value, timeZone) {\n  const text = String(value).trim();\n\n  if (hasExplicitTimezone(text)) {\n    return new Date(text);\n  }\n\n  const match = text.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})(?::(\\d{2}))?/);\n\n  if (!match) {\n    return new Date(text);\n  }\n\n  const [, y, m, d, h, min, s = '0'] = match;\n\n  const localAsUtc = new Date(Date.UTC(\n    Number(y),\n    Number(m) - 1,\n    Number(d),\n    Number(h),\n    Number(min),\n    Number(s)\n  ));\n\n  let offset = getOffsetMinutes(localAsUtc, timeZone);\n  let utcDate = new Date(localAsUtc.getTime() - offset * 60 * 1000);\n\n  offset = getOffsetMinutes(utcDate, timeZone);\n  utcDate = new Date(localAsUtc.getTime() - offset * 60 * 1000);\n\n  return utcDate;\n}\n\n// Findet die CKAN-Records unabhängig davon, in welcher Antwortstruktur sie liegen.\nfunction findRecords(check) {\n  const body = parseMaybeJson(check?.body);\n  const data = parseMaybeJson(check?.data);\n\n  return (\n    body?.result?.records ??\n    data?.result?.records ??\n    check?.result?.records ??\n    body?.records ??\n    data?.records ??\n    check?.records ??\n    []\n  );\n}\n\n// Prüft den letzten CKAN-Zeitstempel und normalisiert ihn für die PEGELONLINE-API.\nfunction validateAndNormalizeTimestamp(value, timeZone) {\n  if (!value) {\n    return { valid: false, reason: 'missing_last_timestamp', date: null, apiStart: null };\n  }\n\n  const date = localTimestampToUtcDate(value, timeZone);\n\n  if (Number.isNaN(date.getTime())) {\n    return { valid: false, reason: 'invalid_last_timestamp', date: null, apiStart: null };\n  }\n\n  if (date.getTime() > Date.now() + 5 * 60 * 1000) {\n    return { valid: false, reason: 'last_timestamp_in_future', date, apiStart: date.toISOString() };\n  }\n\n  return { valid: true, reason: null, date, apiStart: date.toISOString() };\n}\n\n// Verarbeitet jede Messstelle einzeln und baut daraus den passenden PEGELONLINE-Abfragezeitraum.\nfor (let i = 0; i < stationItems.length; i++) {\n  const station = stationItems[i].json;\n  const check = checkItems[i]?.json ?? {};\n\n  const body = parseMaybeJson(check?.body);\n  const data = parseMaybeJson(check?.data);\n  const responseForErrorCheck = body ?? data ?? check;\n  const statusCode = check?.statusCode ?? body?.statusCode ?? data?.statusCode;\n\n  if (statusCode >= 400 || responseForErrorCheck?.success === false || responseForErrorCheck?.error) {\n    out.push({\n      json: {\n        ...station,\n        __skip: true,\n        status: 'ckan_last_timestamp_error',\n        fehler: 'CKAN letzter Messzeitpunkt konnte nicht gelesen werden.',\n        ckan_status_code: statusCode,\n        ckan_response_preview: JSON.stringify(responseForErrorCheck).slice(0, 500)\n      }\n    });\n    continue;\n  }\n\n  const records = findRecords(check);\n  const lastTimestamp = records?.[0]?.zeitstempel ?? null;\n  const timestampCheck = validateAndNormalizeTimestamp(lastTimestamp, station.timezone);\n\n  const fallbackHours = Number(station.fallbackHours || 24);\n  const maxLookbackDays = Number(station.maxLookbackDays || 31);\n  const maxLookbackStart = new Date(Date.now() - maxLookbackDays * 24 * 60 * 60 * 1000);\n\n  let start;\n  let startFallbackUsed = false;\n  let fallbackReason = null;\n\n  if (timestampCheck.valid) {\n    const lastDate = new Date(timestampCheck.apiStart);\n\n    if (lastDate.getTime() < maxLookbackStart.getTime()) {\n      start = maxLookbackStart.toISOString();\n      startFallbackUsed = true;\n      fallbackReason = 'last_timestamp_older_than_max_lookback';\n    } else {\n      start = timestampCheck.apiStart;\n    }\n  } else {\n    start = new Date(Date.now() - fallbackHours * 60 * 60 * 1000).toISOString();\n    startFallbackUsed = true;\n    fallbackReason = (!records || records.length === 0) ? 'no_ckan_records_found' : timestampCheck.reason;\n  }\n\n  const end = new Date().toISOString();\n  const pegelonlineBaseUrl = String(station.pegelonlineBaseUrl).replace(/\\/$/, '');\n\n  out.push({\n    json: {\n      ...station,\n      __skip: false,\n      status: 'zeitraum_ok',\n      letzter_zeitstempel_in_ckan: lastTimestamp,\n      letzter_zeitstempel_normalisiert: timestampCheck.apiStart,\n      start_fallback_used: startFallbackUsed,\n      fallback_reason: fallbackReason,\n      pegelonline_start: start,\n      pegelonline_end: end,\n      pegelonline_measurements_url:\n        `${pegelonlineBaseUrl}/stations/${station.pegelonline_uuid}/W/measurements.json` +\n        `?start=${encodeURIComponent(start)}` +\n        `&end=${encodeURIComponent(end)}`\n    }\n  });\n}\n\nreturn out;"
+      },
+      "name": "04 PEGELONLINE: Zeitraum vorbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Berechnet Start- und Endzeitpunkt für die PEGELONLINE-Abfrage. Nutzt den letzten CKAN-Zeitstempel oder einen Fallback-Zeitraum."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2dd87399-b3c2-4cf3-817e-58f9ec586b7e",
+              "leftValue": "={{ $json[\"__skip\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "05 Nur Stationen mit gültigem Zeitraum",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        960
+      ],
+      "notesInFlow": true,
+      "notes": "Lässt nur Messstellen weiter, bei denen ein gültiger Abfragezeitraum erstellt werden konnte. Fehlerhafte Stationen werden übersprungen."
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.pegelonline_measurements_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "name": "06 PEGELONLINE: Messwerte abrufen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Ruft die Wasserstands-Messwerte der jeweiligen Messstelle über die PEGELONLINE-API ab."
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * Wandelt PEGELONLINE-Antworten in CKAN-kompatible Messwert-Items um.\n * Nicht benötigte Zusatzdaten werden bewusst nicht gespeichert.\n */\n\n// Rechnet PEGELONLINE-Werte in Meter um. Standardfall: PEGELONLINE liefert Wasserstände in cm.\nfunction toMeters(value, unit) {\n  const number = Number(value);\n  if (!Number.isFinite(number)) return null;\n\n  const normalizedUnit = String(unit || '').trim().toLowerCase();\n  if (normalizedUnit === 'm' || normalizedUnit === 'meter') return number;\n\n  return number / 100;\n}\n\n// Parst JSON-Strings, falls ein HTTP-Node body/data als Text statt als Objekt liefert.\nfunction parseMaybeJson(value) {\n  if (typeof value !== 'string') return value;\n  const trimmed = value.trim();\n  if (!trimmed) return value;\n  try {\n    return JSON.parse(trimmed);\n  } catch (error) {\n    return value;\n  }\n}\n\nconst responseItems = $input.all();\nconst stationItems = $items('05 Nur Stationen mit gültigem Zeitraum', 0);\nconst out = [];\n\n// Verarbeitet jede PEGELONLINE-Antwort passend zur jeweiligen Messstelle.\nfor (let i = 0; i < responseItems.length; i++) {\n  const responseRaw = responseItems[i]?.json ?? {};\n  const station = stationItems[i]?.json;\n\n  if (!station) continue;\n\n  let response = responseRaw.body ?? responseRaw.data ?? responseRaw;\n  response = parseMaybeJson(response);\n\n  if (responseRaw?.statusCode >= 400 || response?.error) {\n    out.push({\n      json: {\n        __skip: true,\n        status: 'api_error',\n        fehler: `PEGELONLINE-Fehler bei ${station.name}.`,\n        messstelle_id: Number(station.pegel_id),\n        messstelle_name: station.name,\n        pegelonline_uuid: station.pegelonline_uuid\n      }\n    });\n    continue;\n  }\n\n  const measurements = Array.isArray(response)\n    ? response\n    : Array.isArray(response?.measurements)\n      ? response.measurements\n      : response?.timestamp && response?.value !== undefined\n        ? [response]\n        : [];\n\n  if (measurements.length === 0) {\n    out.push({\n      json: {\n        __skip: true,\n        status: 'no_new_values',\n        fehler: `Keine neuen Messwerte bei ${station.name}.`,\n        messstelle_id: Number(station.pegel_id),\n        messstelle_name: station.name,\n        pegelonline_uuid: station.pegelonline_uuid\n      }\n    });\n    continue;\n  }\n\n  for (const measurement of measurements) {\n    const timestamp = measurement.timestamp;\n    const value = measurement.value;\n    const pegelstandInM = toMeters(value, station.pegelonline_unit);\n\n    if (!timestamp || pegelstandInM === null) {\n      out.push({\n        json: {\n          __skip: true,\n          status: 'invalid_measurement',\n          fehler: `Ungültiger Messwert bei ${station.name}.`,\n          messstelle_id: Number(station.pegel_id),\n          messstelle_name: station.name,\n          pegelonline_uuid: station.pegelonline_uuid\n        }\n      });\n      continue;\n    }\n\n    out.push({\n      json: {\n        __skip: false,\n        status: 'valid',\n        ckanBaseUrl: station.ckanBaseUrl,\n        pegelwerteResourceId: station.pegelwerteResourceId,\n        zeitstempel: timestamp,\n        messstelle_id: Number(station.pegel_id),\n        pegelstand_in_m: Number(pegelstandInM.toFixed(3)),\n        messstelle_name: station.name,\n        pegelonline_uuid: station.pegelonline_uuid\n      }\n    });\n  }\n}\n\nreturn out;"
+      },
+      "name": "07 Messwerte für CKAN normalisieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Wandelt PEGELONLINE-Antworten in CKAN-kompatible Messwert-Items um und rechnet cm in Meter um."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "642008ac-a312-4915-a8a3-fbf7200799af",
+              "leftValue": "={{ $json.__skip }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "08 Nur gültige Messwerte",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Filtert nur verwertbare Messwerte weiter. API-Fehler, leere Antworten oder ungültige Werte werden nicht geschrieben."
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * Baut getrennte CKAN-Payloads für Insert und Update.\n * Unveränderte Messwerte werden gezählt, aber nicht erneut geschrieben.\n */\n\nfunction parseMaybeJson(value) {\n  if (typeof value !== 'string') return value;\n  const trimmed = value.trim();\n  if (!trimmed) return value;\n  try {\n    return JSON.parse(trimmed);\n  } catch (error) {\n    return value;\n  }\n}\n\n// Holt den bereits existierenden CKAN-Datensatz aus unterschiedlichen möglichen Antwortstrukturen.\nfunction getExistingRecord(check) {\n  const body = parseMaybeJson(check?.body);\n  const data = parseMaybeJson(check?.data);\n\n  return (\n    body?.result?.records?.[0] ??\n    data?.result?.records?.[0] ??\n    check?.result?.records?.[0] ??\n    body?.records?.[0] ??\n    data?.records?.[0] ??\n    check?.records?.[0] ??\n    null\n  );\n}\n\n// Prüft, ob die CKAN-Antwort einen Fehler enthält.\nfunction responseHasError(check) {\n  const body = parseMaybeJson(check?.body);\n  const data = parseMaybeJson(check?.data);\n  const response = body ?? data ?? check;\n  return check?.statusCode >= 400 || response?.success === false || response?.error;\n}\n\n// Vergleicht zwei Zahlen mit kleiner Toleranz, damit Rundungsunterschiede keine Updates auslösen.\nfunction numbersAlmostEqual(a, b, tolerance = 0.0005) {\n  const numA = Number(a);\n  const numB = Number(b);\n  if (!Number.isFinite(numA) || !Number.isFinite(numB)) return false;\n  return Math.abs(numA - numB) <= tolerance;\n}\n\nconst checkItems = $input.all();\nconst validRecords = $items('08 Nur gültige Messwerte', 0).map(i => i.json);\n\nconst insertRecords = [];\nconst updateRecords = [];\nconst errors = [];\nlet unchanged = 0;\n\nfor (let i = 0; i < validRecords.length; i++) {\n  const rec = validRecords[i];\n  const check = checkItems[i]?.json ?? {};\n\n  const ckanRecord = {\n    zeitstempel: rec.zeitstempel,\n    messstelle_id: Number(rec.messstelle_id),\n    pegelstand_in_m: Number(rec.pegelstand_in_m)\n  };\n\n  if (responseHasError(check)) {\n    errors.push({\n      messstelle_id: rec.messstelle_id,\n      zeitstempel: rec.zeitstempel,\n      error: parseMaybeJson(check.body) ?? check.error ?? check\n    });\n    continue;\n  }\n\n  const existing = getExistingRecord(check);\n\n  if (existing?._id !== undefined && existing?._id !== null) {\n    if (numbersAlmostEqual(existing.pegelstand_in_m, ckanRecord.pegelstand_in_m)) {\n      unchanged += 1;\n      continue;\n    }\n\n    updateRecords.push({ _id: existing._id, ...ckanRecord });\n  } else {\n    insertRecords.push(ckanRecord);\n  }\n}\n\nconst ckanBaseUrl = validRecords[0]?.ckanBaseUrl;\nconst pegelwerteResourceId = validRecords[0]?.pegelwerteResourceId;\nconst items = [];\n\nif (insertRecords.length > 0) {\n  items.push({\n    json: {\n      operation: 'insert',\n      ckanBaseUrl,\n      body: {\n        resource_id: pegelwerteResourceId,\n        method: 'insert',\n        records: insertRecords\n      },\n      count: insertRecords.length,\n      unchanged_count: unchanged,\n      errors\n    }\n  });\n}\n\nif (updateRecords.length > 0) {\n  items.push({\n    json: {\n      operation: 'update',\n      ckanBaseUrl,\n      body: {\n        resource_id: pegelwerteResourceId,\n        method: 'update',\n        records: updateRecords\n      },\n      count: updateRecords.length,\n      unchanged_count: unchanged,\n      errors\n    }\n  });\n}\n\nif (items.length === 0) {\n  items.push({\n    json: {\n      operation: 'none',\n      ckanBaseUrl,\n      body: {\n        resource_id: pegelwerteResourceId,\n        method: 'insert',\n        records: []\n      },\n      count: 0,\n      unchanged_count: unchanged,\n      message: 'Keine neuen oder veränderten Messwerte gefunden.',\n      errors\n    }\n  });\n}\n\nreturn items;"
+      },
+      "name": "10 CKAN: Schreib-Payloads bauen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Entscheidet, ob ein Messwert neu eingefügt, aktualisiert oder als unverändert gezählt wird. Baut getrennte Insert- und Update-Payloads."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ea235be-aaf9-4be7-9abe-63e71821e832",
+              "leftValue": "={{ $json.operation === \"none\" }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "11 Nur echte Schreib-Payloads",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Verhindert leere CKAN-Schreibversuche, wenn es keine neuen oder geänderten Messwerte gibt."
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * Erstellt eine kompakte Zusammenfassung der Workflow-Ausführung.\n */\n\nfunction parseMaybeJson(value) {\n  if (typeof value !== 'string') return value;\n  const trimmed = value.trim();\n  if (!trimmed) return value;\n  try {\n    return JSON.parse(trimmed);\n  } catch (error) {\n    return value;\n  }\n}\n\nfunction getItemsByPossibleNames(possibleNames) {\n  for (const name of possibleNames) {\n    try {\n      const items = $items(name);\n      if (items && items.length > 0) {\n        return items.map(item => item.json);\n      }\n    } catch (error) {\n      // Node unter diesem Namen nicht gefunden, nächsten Namen probieren.\n    }\n  }\n\n  return [];\n}\n\nfunction responseHasError(response) {\n  const body = parseMaybeJson(response?.body);\n  const data = parseMaybeJson(response?.data);\n  const value = body ?? data ?? response;\n\n  return response?.statusCode >= 400 || value?.success === false || value?.error;\n}\n\nconst writeResponses = $input.all().map(item => item.json);\n\nconst payloadItems = getItemsByPossibleNames([\n  '10 CKAN: Schreib-Payloads bauen',\n  'CKAN Schreib-Payloads bauen',\n  'Schreib-Payloads bauen'\n]);\n\nconst normalizedItems = getItemsByPossibleNames([\n  '07 Messwerte für CKAN normalisieren',\n  '07 PEGELONLINE: Messwerte normalisieren',\n  'Messwerte normalisieren'\n]);\n\nconst zeitraumItems = getItemsByPossibleNames([\n  '04 PEGELONLINE: Zeitraum vorbereiten',\n  'PEGELONLINE Zeitraum vorbereiten'\n]);\n\nconst validItems = normalizedItems.filter(item => item.__skip === false);\nconst skippedMesswerte = normalizedItems.filter(item => item.__skip === true);\nconst skippedStationen = zeitraumItems.filter(item => item.__skip === true);\n\nlet inserted = 0;\nlet updated = 0;\nlet unchanged = 0;\nconst ckanErrors = [];\n\nfor (let i = 0; i < payloadItems.length; i++) {\n  const payload = payloadItems[i];\n  const response = writeResponses[i];\n\n  unchanged += payload.unchanged_count || 0;\n\n  if (payload.operation === 'none') continue;\n\n  if (responseHasError(response)) {\n    ckanErrors.push({\n      operation: payload.operation,\n      count: payload.count,\n      error: parseMaybeJson(response?.body) ?? response?.error ?? response\n    });\n    continue;\n  }\n\n  if (payload.operation === 'insert') inserted += payload.count || 0;\n  if (payload.operation === 'update') updated += payload.count || 0;\n}\n\nconst skippedByStatus = {};\nfor (const item of [...skippedStationen, ...skippedMesswerte]) {\n  const status = item.status || 'unknown';\n  skippedByStatus[status] = (skippedByStatus[status] || 0) + 1;\n}\n\nreturn [\n  {\n    json: {\n      status: ckanErrors.length > 0 ? 'teilweise fehlgeschlagen' : 'erfolgreich',\n      geprüfte_messstellen: zeitraumItems.length,\n      übersprungene_messstellen: skippedStationen.length,\n      geprüfte_messwerte: normalizedItems.length,\n      gültige_messwerte: validItems.length,\n      übersprungene_messwerte: skippedMesswerte.length,\n      übersprungene_nach_status: skippedByStatus,\n      neu_eingefügt: inserted,\n      aktualisiert: updated,\n      unverändert: unchanged,\n      ckan_fehler_anzahl: ckanErrors.length,\n      ckan_fehler: ckanErrors,\n      übersprungene_stationen_details: skippedStationen.map(item => ({\n        messstelle_id: item.pegel_id,\n        name: item.name,\n        status: item.status,\n        fehler: item.fehler,\n        fallback_reason: item.fallback_reason\n      })),\n      übersprungene_messwerte_details: skippedMesswerte.map(item => ({\n        messstelle_id: item.messstelle_id,\n        name: item.messstelle_name,\n        status: item.status,\n        fehler: item.fehler\n      }))\n    }\n  }\n];"
+      },
+      "name": "13 Ergebnis zusammenfassen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        960
+      ],
+      "notesInFlow": true,
+      "notes": "Erstellt am Ende eine kompakte Übersicht: geprüfte Werte, Inserts, Updates, unveränderte Werte und Fehler."
+    },
+    {
+      "parameters": {
+        "ckanUrl": "={{$env.CKAN_BASE_URL}}",
+        "operation": "datastore_upsert",
+        "resource_id": "={{ $json.body.resource_id }}",
+        "records": "={{ JSON.stringify($json.body.records) }}",
+        "method": "={{ $json.body.method }}"
+      },
+      "type": "n8n-nodes-ckan.ckan",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        864
+      ],
+      "name": "CKAN",
+      "notesInFlow": true,
+      "notes": "Schreibt neue oder geänderte Messwerte in die dynamische CKAN-Tabelle."
+    },
+    {
+      "parameters": {
+        "ckanUrl": "={{$env.CKAN_BASE_URL}}",
+        "operation": "datastore_search",
+        "resource_id": "={{ $json.pegelwerteResourceId }}",
+        "filters": "={{ JSON.stringify(JSON.stringify({\n  messstelle_id: Number($json.messstelle_id),\n  zeitstempel: $json.zeitstempel\n})) }}\n",
+        "limit": 1
+      },
+      "type": "n8n-nodes-ckan.ckan",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        944
+      ],
+      "name": "09 CKAN: vorhandene Messwerte prüfen",
+      "alwaysOutputData": true,
+      "notesInFlow": true,
+      "notes": "Prüft für jeden Messwert, ob die Kombination aus messstelle_id und zeitstempel bereits in CKAN existiert."
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * 02 Konfiguration \n * Dies ist die zentrale Stelle für alle Werte, die Nutzer:innen anpassen    * müssen.\n * Hier werden CKAN-Link, Resource-ID, Zeitzone, Fallbacks und Messstellen   * gesetzt.\n */\n\nconst CONFIG = {\n  pegelwerteResourceId: 'DEINE_RESOURCE_ID',\n  timezone: 'Europe/Berlin',\n  fallbackHours: 24, // Bei leerer Tabelle werden 24h geladen\n  maxLookbackDays: 31, // Maximaler Zeitraum um Werte aufzuholen\n  pegelonlineBaseUrl: 'https://www.pegelonline.wsv.de/webservices/rest-api/v2'\n};\n\nconst MESSSTELLEN = [\n  // Öffentliches PEGELONLINE-Beispiel. Für echte Nutzung anpassen oder ersetzen.\n  {\n    pegel_id: 1,\n    name: 'PLOCHINGEN',\n    pegelonline_uuid: 'be7ce40e-5fff-42df-8386-b42694ca86da',\n    aktiv: true\n  },\n\n  // Weitere Messstellen nach diesem Muster ergänzen und aktiv: true setzen.\n  {\n    pegel_id: 2,\n    name: 'BEISPIEL_MESSSTELLE',\n    pegelonline_uuid: 'PEGELONLINE_UUID_HIER_EINTRAGEN',\n    aktiv: false\n  }\n];\n\n// Prüft, ob ein Wert wie eine PEGELONLINE-UUID aussieht.\nfunction isUuid(value) {\n  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value || '').trim());\n}\n\n// Prüft, ob die wichtigsten CKAN-Grundwerte eingetragen wurden.\nif (!CONFIG.pegelwerteResourceId) {\n  throw new Error('Bitte pegelwerteResourceId in der Konfiguration eintragen.');\n}\n\n// Verwendet nur Messstellen, die nicht explizit deaktiviert wurden.\nconst aktiveMessstellen = MESSSTELLEN.filter(station => station.aktiv !== false);\n\nif (aktiveMessstellen.length === 0) {\n  throw new Error('Keine aktive Messstelle gefunden. Mindestens eine Messstelle braucht aktiv: true.');\n}\n\n// Prüft Pflichtfelder je aktiver Messstelle.\nconst fehlerhafteMessstellen = aktiveMessstellen.filter(station => {\n  return !station.pegel_id || !station.name || !isUuid(station.pegelonline_uuid);\n});\n\nif (fehlerhafteMessstellen.length > 0) {\n  throw new Error(\n    'Mindestens eine Messstelle ist unvollständig. Benötigt werden pegel_id, name und gültige pegelonline_uuid.'\n  );\n}\n\n// Gibt pro aktiver Messstelle ein eigenes n8n-Item an den weiteren Workflow weiter.\nreturn aktiveMessstellen.map(station => ({\n  json: {\n    ...CONFIG,\n    pegel_id: Number(station.pegel_id),\n    name: station.name,\n    pegelonline_uuid: String(station.pegelonline_uuid).trim(),\n    pegelonline_unit:'cm'\n  }\n}));"
+      },
+      "name": "02 Konfiguration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        944
+      ],
+      "notesInFlow": true,
+      "notes": "Zentrale Stelle für alle Nutzer-Eingaben: CKAN-Link, Resource-ID, Zeitzone, Fallbacks und Messstellen. Prüft außerdem Pflichtfelder und UUIDs."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "01 Zeitplan: alle 10 Minuten": {
+      "main": [
+        [
+          {
+            "node": "02 Konfiguration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 CKAN: letzten Messzeitpunkt suchen": {
+      "main": [
+        [
+          {
+            "node": "04 PEGELONLINE: Zeitraum vorbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 PEGELONLINE: Zeitraum vorbereiten": {
+      "main": [
+        [
+          {
+            "node": "05 Nur Stationen mit gültigem Zeitraum",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 Nur Stationen mit gültigem Zeitraum": {
+      "main": [
+        [
+          {
+            "node": "06 PEGELONLINE: Messwerte abrufen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 PEGELONLINE: Messwerte abrufen": {
+      "main": [
+        [
+          {
+            "node": "07 Messwerte für CKAN normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Messwerte für CKAN normalisieren": {
+      "main": [
+        [
+          {
+            "node": "08 Nur gültige Messwerte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08 Nur gültige Messwerte": {
+      "main": [
+        [
+          {
+            "node": "09 CKAN: vorhandene Messwerte prüfen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10 CKAN: Schreib-Payloads bauen": {
+      "main": [
+        [
+          {
+            "node": "11 Nur echte Schreib-Payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11 Nur echte Schreib-Payloads": {
+      "main": [
+        [
+          {
+            "node": "CKAN",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "13 Ergebnis zusammenfassen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CKAN": {
+      "main": [
+        [
+          {
+            "node": "13 Ergebnis zusammenfassen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "09 CKAN: vorhandene Messwerte prüfen": {
+      "main": [
+        [
+          {
+            "node": "10 CKAN: Schreib-Payloads bauen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Konfiguration": {
+      "main": [
+        [
+          {
+            "node": "03 CKAN: letzten Messzeitpunkt suchen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "tags": []
+}
