@@ -87,6 +87,29 @@ Getestet mit CKAN 2.11 und self-hosted n8n
 Download/n8n-URL:[ n8n-admin-workflows/pegelstaende-ckan-pegelonline-template.json](https://github.com/ondics/ckan-n8n-workflows/raw/refs/heads/main/n8n-admin-workflows/pegelstaende-ckan-pegelonline-template.json)
 
 ---
+## CKAN Datensatzprüfung und Erinnerungsmails
+
+Prüft CKAN-Datensätze auf lange nicht aktualisierte Inhalte und erstellt Vorschau-, Test- oder Versandmails an Sysadmin und/oder Datensatzkontakte.
+Die CKAN-Abfrage holt maximal 1000 Datensätze und nutzt `metadata_modified`; private Datensätze werden mit `include_private: true` berücksichtigt.
+
+Konfiguration: 
+* Prüfzeitraum und Versandmodus werden im Node `Formular: Datensatzprüfung starten` gewählt.
+* Zeitplan bei Bedarf im Node `Schedule Trigger` anpassen.
+* Beim Zeittrigger stehen die Standardwerte für Prüfzeitraum und Versandmodus im Node `Zeittrigger-Formularwerte setzen`.
+  
+Benötigte Environment-Variablen:
+
+* `{{ $env["SYSADMIN_EMAIL"]}}` 
+* `{{ $env["TEST_EMAIL"]}}` 
+* `{{ $env["EMAIL_FROM"]}}`
+
+
+SMTP-Credentials im Node `E-Mail senden` nach dem Import manuell auswählen. Die Environment-Variablen `SYSADMIN_EMAIL`, `TEST_EMAIL` und `EMAIL_FROM` steuern nur Empfänger- und Absenderadressen im Workflow
+
+Getestet mit CKAN 2.11 und self-hosted n8n.
+
+Download/n8n-URL:[ n8n-admin-workflows/ckan-datensatzpruefung-erinnerungsmails.json](https://github.com/ondics/ckan-n8n-workflows/raw/refs/heads/main/n8n-admin-workflows/ckan-datensatzpruefung-erinnerungsmails.json)
+
 
 # Autoren-bezogene Workflows
 
